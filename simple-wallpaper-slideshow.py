@@ -3,14 +3,14 @@
 
 """
 
-	Simple wallpaper changer
+	Simple wallpaper slideshow
 	by BDeliers, August 2018
 	Under GPL 3.0 License
 
 	Simple wallpaper changer which chnages your wallpaper randomly from a given directory on a defined interval
 
-	CALL SAMPLE : ./simple-wallpaper-changer.py /path/to/folder recurrencyInSeconds
-	CALL EXAMPLE : ./simple-wallpaper-changer.py /home/bdeliers/Pictures 30
+	CALL SAMPLE : ./simple-wallpaper-slideshow.py /path/to/folder recurrencyInSeconds
+	CALL EXAMPLE : ./simple-wallpaper-slideshow.py /home/bdeliers/Pictures/WallpaperSlideshow 30
 
 """
 

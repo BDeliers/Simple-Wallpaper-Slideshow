@@ -1,2 +1,2 @@
-# Simple-Wallpaper-Changer
-Simple wallpaper changer which changes wallpaper each x seconds from a given directory.
+# Simple-Wallpaper-Slideshow
+Simple wallpaper changer which chnages your wallpaper randomly from a given directory on a defined interval.
