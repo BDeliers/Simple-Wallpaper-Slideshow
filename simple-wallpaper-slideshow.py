@@ -56,18 +56,14 @@ for element in listdir(WALLPAPERS_PATH):
 	if (isfile(element) and element.lower().endswith(".png") or element.lower().endswith(".jpeg") or element.lower().endswith(".jpg")):
 		wallpapers.append(element)
 
-# Shuffle directory
-shuffle(wallpapers)
-i = 0
-
 # Forever
 while True:
-	# Set wallpaper
-	call("gsettings set " + GCONF_WALLPAPER[X_SERVER] + " picture-uri " + WALLPAPERS_PATH + '/' + wallpapers[i], shell=True)
+	# Shuffle wallpapers list
+	shuffle(wallpapers)
 
-	i += 1
-	if i == len(wallpapers):
-		i = 0
+	for wallpaper in wallpapers:
+		# Set wallpaper
+		call("gsettings set " + GCONF_WALLPAPER[X_SERVER] + " picture-uri " + WALLPAPERS_PATH + '/' + wallpaper, shell=True)
 
-	# Pause between 2 changes
-	sleep(RECURRENCY)
+		# Pause between 2 changes
+		sleep(RECURRENCY)
