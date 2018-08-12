@@ -6,4 +6,4 @@ Comment=Simple wallpapers slideshow
 Exec=python3 /home/bdeliers/simple-wallpaper-slideshow.py /home/bdeliers/Pictures/WallpapersSlideshow 60
 Type=Application
 Terminal=false
-X-GNOME-Autostart-Delay=30
+X-GNOME-Autostart-Delay=60

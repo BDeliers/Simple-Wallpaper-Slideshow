@@ -7,7 +7,7 @@
 	by BDeliers, August 2018
 	Under GPL 3.0 License
 
-	Simple wallpaper changer which chnages your wallpaper randomly from a given directory on a defined interval
+	Simple wallpaper changer which changes your wallpaper randomly from a given directory on a defined interval on GNOME based Linux desktop environments
 
 	CALL SAMPLE : ./simple-wallpaper-slideshow.py /path/to/folder recurrencyInSeconds
 	CALL EXAMPLE : ./simple-wallpaper-slideshow.py /home/bdeliers/Pictures/WallpaperSlideshow 30
@@ -26,6 +26,12 @@ from time import sleep
 from random import shuffle
 # Call bash command
 from subprocess import call
+# Visual notification
+import notify2
+
+# Prepare notification
+notify2.init("Wallpaper Slideshow")
+notif = notify2.Notification("Wallpaper Slideshow", "Slideshow has started !", "settings")
 
 # Get window manager
 X_SERVER = environ["XDG_CURRENT_DESKTOP"]
@@ -55,6 +61,9 @@ for element in listdir(WALLPAPERS_PATH):
 	# If is png, jpeg or jpg, append to wallpapers list
 	if (isfile(element) and element.lower().endswith(".png") or element.lower().endswith(".jpeg") or element.lower().endswith(".jpg")):
 		wallpapers.append(element)
+
+# Show notification
+notif.show()
 
 # Forever
 while True:
