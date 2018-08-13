@@ -41,20 +41,8 @@ class WallpaperSlideshow:
 							"ubuntu:GNOME" : "org.gnome.desktop.background",
 							"Unity" : "org.gnome.desktop.background"
 						}
-
-		# Remove '/' of end of dir
-		if wallpapersDir.endswith('/'):
-			wallpapersDir = wallpapersDir[:-1]
-
-		# If valid directory and interval
-		if (isdir(wallpapersDir) and int(interval) > 0):
-			# Wallpapers directory
-			self.wallpapersDir = wallpapersDir
-			# Seconds between wallpaper change
-			self.interval = int(interval)
-			#
-		else:
-			raise Exception("Invalid wallpapers path or time interval")
+		self.wallpapersDir = wallpapersDir
+		self.interval = int(interval)
 
 	def listWallpapers(self):
 		"""
@@ -63,13 +51,20 @@ class WallpaperSlideshow:
 
 		self.wallpapers = []
 
-		# For all elements in directory
-		for element in listdir(self.wallpapersDir):
-			# If is png, jpeg or jpg, append to wallpapers list
-			if (isfile(element) and element.lower().endswith(".png") or element.lower().endswith(".jpeg") or element.lower().endswith(".jpg")):
-				self.wallpapers.append(element)
+		# Remove '/' of end of dir
+		if self.wallpapersDir.endswith('/'):
+			self.wallpapersDir = self.wallpapersDir[:-1]
 
-		self.wallpapers.sort()
+		if isdir(self.wallpapersDir):
+			# For all elements in directory
+			for element in listdir(self.wallpapersDir):
+				# If is png, jpeg or jpg, append to wallpapers list
+				if (isfile(element) and element.lower().endswith(".png") or element.lower().endswith(".jpeg") or element.lower().endswith(".jpg")):
+					self.wallpapers.append(element)
+
+			self.wallpapers.sort()
+		else:
+			raise Exception("Invalid directory")
 
 	def setWallpaper(self, wallpaper):
 		"""
@@ -83,8 +78,16 @@ class WallpaperSlideshow:
 			Run the slideshow
 		"""
 
+		# If invalid interval
+		if not (int(self.interval) > 0):
+			raise Exception("Invalid time interval")
+
 		# Get wallpapers
 		self.listWallpapers()
+
+		# If empty wallpapers list
+		if len(self.wallpapers) == 0:
+			raise Exception("No wallpapers in directory")
 
 		# Prepare notification
 		notify2.init("Wallpaper Slideshow")
