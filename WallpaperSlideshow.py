@@ -18,6 +18,34 @@ from random import shuffle
 from subprocess import call
 # Visual notification
 import notify2
+# Threading
+import threading
+
+class ChangerThread(threading.Thread):
+	def __init__(self, slideshow):
+		threading.Thread.__init__(self)
+		self.slideshow = slideshow
+
+	def run(self):
+		self._running = True
+
+		while self._running:
+			# Shuffle wallpapers list
+			shuffle(self.slideshow.wallpapers)
+
+			for wallpaper in self.slideshow.wallpapers:
+				if self._running:
+					# Set wallpaper
+					self.slideshow.setWallpaper("{}/{}".format(self.slideshow.wallpapersDir, wallpaper))
+
+					# Sleep
+					sleep(self.slideshow.interval)
+
+				else:
+					break
+
+	def stop(self):
+		self._running = False
 
 class WallpaperSlideshow:
 	"""
@@ -43,13 +71,13 @@ class WallpaperSlideshow:
 						}
 		self.wallpapersDir = wallpapersDir
 		self.interval = int(interval)
+		self.wallpapers = []
 
 	def listWallpapers(self):
 		"""
 			List all wallpapers from given directory path
 		"""
 
-		self.wallpapers = []
 
 		# Remove '/' of end of dir
 		if self.wallpapersDir.endswith('/'):
@@ -75,7 +103,7 @@ class WallpaperSlideshow:
 
 	def runSlideshow(self):
 		"""
-			Run the slideshow
+			Run the slideshow in a thread
 		"""
 
 		# If invalid interval
@@ -91,21 +119,28 @@ class WallpaperSlideshow:
 
 		# Prepare notification
 		notify2.init("Wallpaper Slideshow")
-		notif = notify2.Notification("Wallpaper Slideshow", "Slideshow has started !", "settings")
+		notif = notify2.Notification("Wallpaper Slideshow", "Slideshow has started !", "start")
+
+		# Create thread
+		self._thread = ChangerThread(self)
+		# Start thread
+		self._thread.start()
 
 		# Show notification
 		notif.show()
 
-		while True:
-			# Shuffle wallpapers list
-			shuffle(self.wallpapers)
+	def stopSlideshow(self):
+		"""
+			Stop the slideshow in the thread
+		"""
 
-			for wallpaper in self.wallpapers:
-				# Set wallpaper
-				self.setWallpaper("{}/{}".format(self.wallpapersDir, wallpaper))
+		self._thread.stop()
 
-				# Sleep
-				sleep(self.interval)
+		# Prepare notification
+		notify2.init("Wallpaper Slideshow")
+		notif = notify2.Notification("Wallpaper Slideshow", "Slideshow is stopped !", "stop")
+		# Show notification
+		notif.show()
 
 
 if __name__ == "__main__":
