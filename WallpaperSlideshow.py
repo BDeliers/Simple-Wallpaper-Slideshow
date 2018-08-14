@@ -78,12 +78,13 @@ class WallpaperSlideshow:
 			List all wallpapers from given directory path
 		"""
 
-
 		# Remove '/' of end of dir
 		if self.wallpapersDir.endswith('/'):
 			self.wallpapersDir = self.wallpapersDir[:-1]
 
 		if isdir(self.wallpapersDir):
+			# Delete all wallpapers
+			self.wallpapers = []
 			# For all elements in directory
 			for element in listdir(self.wallpapersDir):
 				# If is png, jpeg or jpg, append to wallpapers list
