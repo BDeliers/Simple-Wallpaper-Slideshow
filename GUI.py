@@ -12,14 +12,14 @@ import tkinter.ttk as ttk
 from ttkthemes import ThemedTk
 # Wallpaper Slideshow
 from WallpaperSlideshow import WallpaperSlideshow
-# Copy file
-from shutil import copyfile
-# User directory, is file, real path
-from os.path import expanduser, isfile, realpath
-# Remove file
-from os import remove
+# Copy file, copy folder, remove folder
+from shutil import copyfile, copytree, rmtree
+# User directory, is file, real path, is dir
+from os.path import expanduser, isfile, realpath, isdir
+# Remove file, current directory
+from os import remove, getcwd
 # Argv
-from sys import argv
+import sys
 
 # Home folder
 HOME = expanduser("~")
@@ -87,13 +87,23 @@ class UI(ttk.Frame):
             self.runButton["text"] = "Run"
 
     def onStartupButtonAction(self):
-        self.slideshow.interval = int(self.intervalEntry.get())
+        if self.intervalEntry.get() in self.intervalVals["raw"]:
+            self.slideshow.interval = self.intervalVals["equiv"][self.intervalEntry.get()]
+
+        else:
+            self.slideshow.interval = int(self.intervalEntry.get())
 
         if len(self.slideshow.wallpapers) and self.slideshow.interval > 0:
 
-            desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{} {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
+            if getattr(sys, "frozen", True):
+                desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{}/WallpaperSlideshow {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
+            else:
+                desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{} {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
 
-            copyfile(realpath(__file__), self._script)
+            if getattr(sys, "frozen", True):
+                copytree(getcwd(), self._script)
+            else:
+                copyfile("./WallpaperSlideshow.py", self._script)
 
             f = open(self._desktopEntry, "w+")
             f.write(desktopEntry)
@@ -102,11 +112,13 @@ class UI(ttk.Frame):
             messagebox.showinfo("Wallpaper Slideshow", "Added to startup")
 
     def removeStartupButtonAction(self):
-        if isfile(self._script):
-            remove(self._script)
-
-        if isfile(self._desktopEntry):
+        if isfile(self._desktopEntry) and (isdir(self._script) or isfile(self._script)):
             remove(self._desktopEntry)
+
+            if isfile(self._script):
+                remove(self._script)
+            elif isdir(self._script):
+                rmtree(self._script)
 
             messagebox.showinfo("Wallpaper Slideshow", "Removed from startup")
 
@@ -159,8 +171,8 @@ class UI(ttk.Frame):
         self.removeStartupButton.grid(row=1, column=2, pady=8, sticky=tk.E)
 
 if __name__ == "__main__":
-    if len(argv) == 3:
-        slideshow = WallpaperSlideshow(argv[1], argv[2])
+    if len(sys.argv) == 3:
+        slideshow = WallpaperSlideshow(sys.argv[1], sys.argv[2])
 
         try:
             slideshow.runSlideshow()
