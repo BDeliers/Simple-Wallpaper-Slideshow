@@ -10,10 +10,10 @@ This program features a GUI to select the wallpapers diretory and the time inter
 **Standalone compiled version is available in the "Release" pane.**  
 If you want to use the uncompiled version, you'll need to install Python 3 libs :  
 
-    `sudo apt-get install python3-tk`  
-    `sudo pip3 install cx_Freeze`    
-    `sudo pip3 install ttkthemes`    
-    `sudo pip3 install notify2`  
+    sudo apt-get install python3-tk  
+    sudo pip3 install cx_Freeze    
+    sudo pip3 install ttkthemes    
+    sudo pip3 install notify2  
 
 For now, it supports these desktop environments :
 
