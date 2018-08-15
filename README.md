@@ -20,7 +20,7 @@ For now, it supports these desktop environments :
 If your desktop environment is GNOME-based and not listed above, contact me and I'll try to add it !
 
 ### Screenshot :
-![Screenshot](https://raw.githubusercontent.com/BDeliers/Simple-Wallpaper-Slideshow/master/Sreenshot.png)
+![Screenshot](https://raw.githubusercontent.com/BDeliers/Simple-Wallpaper-Slideshow/master/Screenshot.png)
 
 ---
 
