@@ -14,8 +14,8 @@ from ttkthemes import ThemedTk
 from WallpaperSlideshow import WallpaperSlideshow
 # Copy file, copy folder, remove folder
 from shutil import copyfile, copytree, rmtree
-# User directory, is file, real path, is dir
-from os.path import expanduser, isfile, realpath, isdir
+# User directory, is file, real path, is dir, directory name
+from os.path import expanduser, isfile, realpath, isdir, dirname
 # Remove file, current directory
 from os import remove, getcwd
 # Argv
@@ -101,9 +101,9 @@ class UI(ttk.Frame):
                 desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{} {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
 
             if (hasattr(sys, "frozen") and getattr(sys, "frozen")):
-                copytree(getcwd(), self._script)
+                copytree(dirname(sys.executable), self._script)
             else:
-                copyfile("./WallpaperSlideshow.py", self._script)
+                copyfile(dirname(realpath(__file__)) + "/WallpaperSlideshow.py", self._script)
 
             f = open(self._desktopEntry, "w+")
             f.write(desktopEntry)
@@ -183,7 +183,11 @@ if __name__ == "__main__":
         root = ThemedTk()
         root.title("Wallpaper Changer")
 
-        img = tk.PhotoImage(file="./icon.png")
+        if (hasattr(sys, "frozen") and getattr(sys, "frozen")):
+            img = tk.PhotoImage(file=dirname(sys.executable) + "/icon.png")
+        else:
+            img = tk.PhotoImage(file=dirname(realpath(__file__)) + "/icon.png")
+
         root.tk.call("wm", "iconphoto", root._w, img)
 
         root.set_theme("arc")
