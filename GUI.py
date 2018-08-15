@@ -95,12 +95,12 @@ class UI(ttk.Frame):
 
         if len(self.slideshow.wallpapers) and self.slideshow.interval > 0:
 
-            if getattr(sys, "frozen", True):
+            if (hasattr(sys, "frozen") and getattr(sys, "frozen")):
                 desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{}/WallpaperSlideshow {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
             else:
                 desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{} {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
 
-            if getattr(sys, "frozen", True):
+            if (hasattr(sys, "frozen") and getattr(sys, "frozen")):
                 copytree(getcwd(), self._script)
             else:
                 copyfile("./WallpaperSlideshow.py", self._script)
