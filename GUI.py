@@ -1,9 +1,12 @@
 #!/usr/bin/python3
 # -*-coding:Utf-8 -*
 
+#CALL SAMPLE : ./GUI.py /path/to/folder recurrencyInSeconds
+#CALL EXAMPLE : ./GUI.py /home/bdeliers/Pictures/WallpaperSlideshow 30
+
 # Tkinter
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 # Theming Tkinter
 import tkinter.ttk as ttk
 from ttkthemes import ThemedTk
@@ -11,10 +14,12 @@ from ttkthemes import ThemedTk
 from WallpaperSlideshow import WallpaperSlideshow
 # Copy file
 from shutil import copyfile
-# User directory, is file
-from os.path import expanduser, isfile
+# User directory, is file, real path
+from os.path import expanduser, isfile, realpath
 # Remove file
 from os import remove
+# Argv
+from sys import argv
 
 # Home folder
 HOME = expanduser("~")
@@ -35,11 +40,13 @@ def desktopEntryCreator(name, genericName, comment, command, autostartDelay):
 class UI(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
+
         self.parent = parent
         self.wallpapersDir = "/home"
         self.slideshow = WallpaperSlideshow("/home", 30)
+        self.intervalVals = {"raw":["10 sec", "30 sec", "1 min", "2 min", "5 min", "10 min", "15 min", "20 min", "30 min", "1 h"], "equiv":{"10 sec":10, "30 sec":30, "1 min":60, "2 min":120, "5 min":300, "10 min":600, "15 min":900, "20 min":1200, "30 min":1800, "1 h":3600}}
 
-        self._script = "{}/.WallpaperSlideshow.py".format(HOME)
+        self._script = "{}/.WallpaperSlideshow".format(HOME)
         self._desktopEntry = "{}/.config/autostart/wallpaper-slideshow.desktop".format(HOME)
 
         self.directoryFrame()
@@ -65,9 +72,16 @@ class UI(ttk.Frame):
 
     def runButtonAction(self):
         if self.runButton["text"] == "Run":
-            self.slideshow.interval = int(self.intervalEntry.get())
-            self.slideshow.runSlideshow()
-            self.runButton["text"] = "Stop"
+            if self.intervalEntry.get() in self.intervalVals["raw"]:
+                self.slideshow.interval = self.intervalVals["equiv"][self.intervalEntry.get()]
+
+            else:
+                self.slideshow.interval = int(self.intervalEntry.get())
+
+            if(self.slideshow.runSlideshow()):
+                self.runButton["text"] = "Stop"
+            else:
+                messagebox.showerror("Wallpaper Changer", "No wallpapers in directory or invalid time interval")
         else:
             self.slideshow.stopSlideshow()
             self.runButton["text"] = "Run"
@@ -77,16 +91,15 @@ class UI(ttk.Frame):
 
         if len(self.slideshow.wallpapers) and self.slideshow.interval > 0:
 
-            desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "python3 {} {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
+            desktopEntry = desktopEntryCreator("Wallpaper Slideshow", "Wallpaper Slideshow", "Simple wallpaper slideshow", "{} {} {}".format(self._script, self.slideshow.wallpapersDir, self.slideshow.interval), self.slideshow.interval)
 
-            copyfile("./WallpaperSlideshow.py", self._script)
+            copyfile(realpath(__file__), self._script)
 
             f = open(self._desktopEntry, "w+")
             f.write(desktopEntry)
             f.close()
 
-            self.onStartupButton["text"] = "Added to startup"
-            self.removeStartupButton["text"] = "Remove from startup"
+            messagebox.showinfo("Wallpaper Slideshow", "Added to startup")
 
     def removeStartupButtonAction(self):
         if isfile(self._script):
@@ -94,8 +107,8 @@ class UI(ttk.Frame):
 
         if isfile(self._desktopEntry):
             remove(self._desktopEntry)
-            self.removeStartupButton["text"] = "Removed from startup"
-            self.onStartupButton["text"] = "Launch on startup"
+
+            messagebox.showinfo("Wallpaper Slideshow", "Removed from startup")
 
     def directoryFrame(self):
         self.directoryFrame = ttk.Frame(master=self)
@@ -131,10 +144,11 @@ class UI(ttk.Frame):
     def settingsFrame(self):
         self.settingsFrame = ttk.Frame(master=self)
         self.settingsFrame.grid(padx=8, row=2)
-        ttk.Label(self.settingsFrame, text="Change interval (in sec):").grid(row=0, column=0, sticky=tk.W)
 
-        self.intervalEntry = ttk.Combobox(self.settingsFrame, values=(30, 60, 120, 300, 600, 900, 1200, 1800, 3600))
-        self.intervalEntry.set(30)
+        ttk.Label(self.settingsFrame, text="Change interval (or type interval in sec):").grid(row=0, column=0, sticky=tk.W)
+
+        self.intervalEntry = ttk.Combobox(self.settingsFrame, values=self.intervalVals["raw"])
+        self.intervalEntry.set("30 sec")
         self.intervalEntry.grid(row=0, column=1, sticky=tk.W, padx=2)
 
         self.runButton = ttk.Button(self.settingsFrame, text="Run", command=self.runButtonAction)
@@ -145,18 +159,26 @@ class UI(ttk.Frame):
         self.removeStartupButton.grid(row=1, column=2, pady=8, sticky=tk.E)
 
 if __name__ == "__main__":
-    root = ThemedTk()
-    root.title("Wallpaper Changer")
+    if len(argv) == 3:
+        slideshow = WallpaperSlideshow(argv[1], argv[2])
 
-    img = tk.PhotoImage(file="./icon.png")
+        try:
+            slideshow.runSlideshow()
+        except:
+            slideshow.stopSlideshow()
 
-    root.tk.call("wm", "iconphoto", root._w, img)
+    else:
+        root = ThemedTk()
+        root.title("Wallpaper Changer")
 
-    root.set_theme("arc")
+        img = tk.PhotoImage(file="./icon.png")
+        root.tk.call("wm", "iconphoto", root._w, img)
 
-    root.grid_columnconfigure(0, weight=1)
+        root.set_theme("arc")
 
-    app = UI(root)
-    app.pack()
+        root.grid_columnconfigure(0, weight=1)
 
-    app.mainloop()
+        app = UI(root)
+        app.pack()
+
+        app.mainloop()

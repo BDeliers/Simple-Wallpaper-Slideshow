@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # -*-coding:Utf-8 -*
 
-#CALL SAMPLE : ./simple-wallpaper-slideshow.py /path/to/folder recurrencyInSeconds
-#CALL EXAMPLE : ./simple-wallpaper-slideshow.py /home/bdeliers/Pictures/WallpaperSlideshow 30
+#CALL SAMPLE : ./WallpaperSlideshow.py /path/to/folder recurrencyInSeconds
+#CALL EXAMPLE : ./WallpaperSlideshow.py /home/bdeliers/Pictures/WallpaperSlideshow 30
 
 # Environment variables, list directory
 from os import environ, listdir
@@ -109,26 +109,33 @@ class WallpaperSlideshow:
 
 		# If invalid interval
 		if not (int(self.interval) > 0):
-			raise Exception("Invalid time interval")
+			print("Invalid time interval")
 
 		# Get wallpapers
 		self.listWallpapers()
 
 		# If empty wallpapers list
 		if len(self.wallpapers) == 0:
-			raise Exception("No wallpapers in directory")
+			print("No wallpapers in directory")
 
-		# Prepare notification
-		notify2.init("Wallpaper Slideshow")
-		notif = notify2.Notification("Wallpaper Slideshow", "Slideshow has started !", "start")
+		# If everything is valid
+		if (len(self.wallpapers) > 0 and self.interval > 0):
+			# Prepare notification
+			notify2.init("Wallpaper Slideshow")
+			notif = notify2.Notification("Wallpaper Slideshow", "Slideshow has started !", "start")
 
-		# Create thread
-		self._thread = ChangerThread(self)
-		# Start thread
-		self._thread.start()
+			# Create thread
+			self._thread = ChangerThread(self)
+			# Start thread
+			self._thread.start()
 
-		# Show notification
-		notif.show()
+			# Show notification
+			notif.show()
+
+			return True
+
+		else:
+			return False
 
 	def stopSlideshow(self):
 		"""
@@ -143,7 +150,15 @@ class WallpaperSlideshow:
 		# Show notification
 		notif.show()
 
+		return True
+
 
 if __name__ == "__main__":
 	slideshow = WallpaperSlideshow(argv[1], argv[2])
-	slideshow.runSlideshow()
+
+	try:
+		slideshow.runSlideshow()
+		print("Started")
+	except:
+		slideshow.stopSlideshow()
+		print("Stopped")
