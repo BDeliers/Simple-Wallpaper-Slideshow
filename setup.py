@@ -1,12 +1,12 @@
 from cx_Freeze import setup, Executable
 
 executable = Executable(
-                script = "./GUI.py",
-                icon = "./icon.png",
+                script = "./src/GUI.py",
+                icon = "./src/icon.png",
                 targetName = "WallpaperSlideshow",
             )
 
-includefiles = ["./icon.png"]
+includefiles = ["./src/icon.png"]
 
 setup(
     name = "WallpaperSlideshow",
