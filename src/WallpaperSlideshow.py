@@ -73,6 +73,18 @@ class WallpaperSlideshow:
 		self.interval = int(interval)
 		self.wallpapers = []
 
+	def isCompatible(self):
+		"""
+			Returns True if your desktop environment is compatible with the program
+		"""
+
+		# If we know how to set wallpaper with this X_SERVER
+		if (self._X_SERVER in self._GCONF_WALLPAPER.keys()):
+			return True
+
+		else:
+			return False
+
 	def listWallpapers(self):
 		"""
 			List all wallpapers from given directory path
@@ -156,9 +168,13 @@ class WallpaperSlideshow:
 if __name__ == "__main__":
 	slideshow = WallpaperSlideshow(argv[1], argv[2])
 
-	try:
-		slideshow.runSlideshow()
-		print("Started")
-	except:
-		slideshow.stopSlideshow()
-		print("Stopped")
+	if slideshow.isCompatible():
+		try:
+			slideshow.runSlideshow()
+			print("Started")
+		except:
+			slideshow.stopSlideshow()
+			print("Stopped")
+
+	else:
+		print("Not compatible with your X_SERVER")

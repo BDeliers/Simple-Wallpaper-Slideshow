@@ -49,10 +49,6 @@ class UI(ttk.Frame):
         self._script = "{}/.WallpaperSlideshow".format(HOME)
         self._desktopEntry = "{}/.config/autostart/wallpaper-slideshow.desktop".format(HOME)
 
-        self.directoryFrame()
-        self.filesListFrame()
-        self.settingsFrame()
-
     def browseButtonAction(self):
         self.wallpapersDir = filedialog.askdirectory(initialdir="~/")
         self.pathEntry.delete(0, tk.END)
@@ -121,6 +117,11 @@ class UI(ttk.Frame):
                 rmtree(self._script)
 
             messagebox.showinfo("Wallpaper Slideshow", "Removed from startup")
+
+    def drawUI(self):
+        self.directoryFrame()
+        self.filesListFrame()
+        self.settingsFrame()
 
     def directoryFrame(self):
         self.directoryFrame = ttk.Frame(master=self)
@@ -196,5 +197,12 @@ if __name__ == "__main__":
 
         app = UI(root)
         app.pack()
+
+        if app.slideshow.isCompatible():
+            app.drawUI()
+            
+        else:
+            messagebox.showerror("Wallpaper Slideshow", "Not compatible with your X_SERVER \n Contact BDeliers on gitHub if you want to add it !")
+            exit()
 
         app.mainloop()
